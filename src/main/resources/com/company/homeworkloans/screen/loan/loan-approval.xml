@@ -1,15 +1,17 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <window xmlns="http://jmix.io/schema/ui/window"
         xmlns:c="http://jmix.io/schema/ui/jpql-condition"
-        caption="msg://clientBrowse.caption"
-        focusComponent="clientsTable">
+        caption="msg://loanApproval.caption"
+        focusComponent="loansTable">
     <data readOnly="true">
-        <collection id="clientsDc"
-                    class="com.company.homeworkloans.entity.Client">
-            <fetchPlan extends="_base"/>
-            <loader id="clientsDl">
+        <collection id="loansDc"
+                    class="com.company.homeworkloans.entity.Loan">
+            <fetchPlan extends="_base">
+                <property name="client" fetchPlan="_base"/>
+            </fetchPlan>
+            <loader id="loansDl">
                 <query>
-                    <![CDATA[select e from Client e]]>
+                    <![CDATA[select e from Loan e where e.status = 'R']]>
                 </query>
             </loader>
         </collection>
@@ -30,35 +32,40 @@
     </actions>
     <dialogMode height="600"
                 width="800"/>
-    <layout expand="clientsTable" spacing="true">
+    <layout expand="loansTable" spacing="true">
         <filter id="filter"
-                dataLoader="clientsDl">
+                dataLoader="loansDl">
             <properties include=".*"/>
         </filter>
-        <groupTable id="clientsTable"
+        <hbox spacing="true">
+            <button id="approveBtn" action="loansTable.approve"/>
+            <button id="rejectBtn" action="loansTable.reject" />
+        </hbox>
+        <groupTable id="loansTable"
                     width="100%"
-                    dataContainer="clientsDc">
+                    dataContainer="loansDc">
             <actions>
-                <action id="create" type="create"/>
-                <action id="edit" type="edit"/>
-                <action id="remove" type="remove"/>
-                <action id="requestLoan" caption="Request Loan"
-                        icon="BOOK"/>
+                <action id="approve"
+                        caption="Approve"
+                        icon="EDITOR_OK"
+                        type="itemTracking"/>
+                <action id="reject"
+                        caption="Reject"
+                        icon="EDITOR_CANCEL"
+                        type="itemTracking"/>
             </actions>
             <columns>
-                <column id="firstName"/>
-                <column id="lastName"/>
-                <column id="phoneNumber"/>
-                <column id="birthDate"/>
-                <column id="salary"/>
+                <column id="requestDate"/>
+                <column id="client"/>
+                <column id="amount"/>
+                <column id="client.phoneNumber"/>
+                <column id="client.salary"/>
+                <column id="age"
+                        caption="Age"/>
             </columns>
             <simplePagination/>
             <buttonsPanel id="buttonsPanel"
                           alwaysVisible="true">
-                <button id="createBtn" action="clientsTable.create"/>
-                <button id="editBtn" action="clientsTable.edit"/>
-                <button id="removeBtn" action="clientsTable.remove"/>
-                <button id="requestLoan" action="clientsTable.requestLoan"/>
             </buttonsPanel>
         </groupTable>
         <hbox id="lookupActions" spacing="true" visible="false">
